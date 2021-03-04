@@ -71,6 +71,7 @@ public class BookingServiceIMPL implements BookingService {
                 Train train = trainRepository.findById(requestDTO.getTrainId()).get();
                 response.setTrainName(train.getName());
                 response.setDepartureTime(train.getDepartureTime());
+                response.setPassengers(requestDTO.getPassengers());
 
                 return response;
             }

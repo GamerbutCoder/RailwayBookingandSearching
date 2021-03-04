@@ -12,4 +12,7 @@ public class BookingResponseDTO {
     private int seatCount;
     private List<String> seatList;
     private String departureTime;
+    private List<PassengerDTO> passengers;
+
+    //fare need to be added
 }
