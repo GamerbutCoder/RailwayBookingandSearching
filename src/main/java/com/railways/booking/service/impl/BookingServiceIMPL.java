@@ -2,23 +2,26 @@ package com.railways.booking.service.impl;
 
 import com.railways.booking.constant.TrainConstants;
 import com.railways.booking.controller.SessionController;
+import com.railways.booking.dto.BookingHistoryRequestDTO;
+import com.railways.booking.dto.BookingHistoryResponseDTO;
 import com.railways.booking.dto.BookingRequestDTO;
 import com.railways.booking.dto.BookingResponseDTO;
-import com.railways.booking.entity.SearchCompositeKey;
-import com.railways.booking.entity.SeatAvilability;
-import com.railways.booking.entity.Sessions;
-import com.railways.booking.entity.Train;
+import com.railways.booking.entity.*;
+import com.railways.booking.repository.BookingHistoryRepository;
 import com.railways.booking.repository.SeatAvailabilityRepository;
 import com.railways.booking.repository.SessionRepository;
 import com.railways.booking.repository.TrainRepository;
 import com.railways.booking.service.BookingService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,6 +35,9 @@ public class BookingServiceIMPL implements BookingService {
 
     @Autowired
     private TrainRepository trainRepository;
+
+    @Autowired
+    private BookingHistoryRepository bookingHistoryRepository;
 
     private String generateSeatNumbers(Long id,Long totalSeats,Long reqSeats){
         Optional<Train> optionalTrain = trainRepository.findById(id);
@@ -100,6 +106,8 @@ public class BookingServiceIMPL implements BookingService {
                     response.setPassengers(requestDTO.getPassengers());
                     response.setFare(250.75);
                     //store the booking history in db
+                    String sessionId = requestDTO.getUserID();
+                    createBookingHistory(response,seatNumbers,sessionId);
                     ResponseEntity<BookingResponseDTO> responseEntity = new ResponseEntity<>(response, HttpStatus.OK);
                     return responseEntity;
                 }
@@ -110,5 +118,44 @@ public class BookingServiceIMPL implements BookingService {
         ResponseEntity<BookingResponseDTO> responseEntity = new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         // TODO: ResponseEntity in controller
         return responseEntity;
+    }
+
+
+
+    @Transactional
+    public void createBookingHistory(BookingResponseDTO bookingResponseDTO,String seatList,String sessionId){
+        BookingHistory bookingHistory = new BookingHistory();
+        bookingHistory.setTrainId(bookingResponseDTO.getTrainId());
+        bookingHistory.setDateOfJourney(bookingResponseDTO.getDateOfJourney());
+        bookingHistory.setTrainName(bookingResponseDTO.getTrainName());
+        bookingHistory.setDepartureTime(bookingResponseDTO.getDepartureTime());
+        bookingHistory.setSeatList(seatList);
+
+        String userName = sessionRepository.findUserNameBySessionId(sessionId);
+
+        bookingHistory.setUserName(userName);
+
+        BookingHistory savedBookingHistory = bookingHistoryRepository.save(bookingHistory);
+
+        return;
+
+    }
+
+    @Override
+    public List<BookingHistoryResponseDTO> getBookingHistory(BookingHistoryRequestDTO requestDTO){
+        String sessionId = requestDTO.getSessionID();
+        String userName = sessionRepository.findUserNameBySessionId(sessionId);
+
+        List<BookingHistory> bookingHistoryList = bookingHistoryRepository.getBookingHistoryByUserName(userName);
+
+        List<BookingHistoryResponseDTO> bookingHistoryResponseDTOList = new ArrayList<>();
+
+        for (BookingHistory bookingHistory : bookingHistoryList) {
+            BookingHistoryResponseDTO bookingHistoryResponseDTO = new BookingHistoryResponseDTO();
+            BeanUtils.copyProperties(bookingHistory, bookingHistoryResponseDTO);
+            bookingHistoryResponseDTOList.add(bookingHistoryResponseDTO);
+        }
+
+        return bookingHistoryResponseDTOList;
     }
 }
