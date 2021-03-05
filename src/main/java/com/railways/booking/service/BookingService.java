@@ -3,7 +3,8 @@ package com.railways.booking.service;
 
 import com.railways.booking.dto.BookingRequestDTO;
 import com.railways.booking.dto.BookingResponseDTO;
+import org.springframework.http.ResponseEntity;
 
 public interface BookingService {
-     BookingResponseDTO doBooking(BookingRequestDTO requestDTO);
+     ResponseEntity<BookingResponseDTO> doBooking(BookingRequestDTO requestDTO);
 }

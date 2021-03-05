@@ -11,6 +11,8 @@ import com.railways.booking.repository.SeatAvailabilityRepository;
 import com.railways.booking.repository.TrainRepository;
 import com.railways.booking.service.TrainService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,10 +33,12 @@ public class TrainServiceIMPL implements TrainService {
 
     @Override
     @Transactional
-    public List<SearchResponseDTO> getTrains(SearchRequestDTO requestDTO) {
-
+    public ResponseEntity<List<SearchResponseDTO>> getTrains(SearchRequestDTO requestDTO) {
+        if(requestDTO.getDate()==null || requestDTO.getToLocation()==null || requestDTO.getFromLocation()==null){
+            ResponseEntity<List<SearchResponseDTO>> responseEntity = new ResponseEntity<>(null, HttpStatus.BAD_GATEWAY);
+            return responseEntity;
+        }
         java.sql.Date date = requestDTO.getDate();
-        //System.out.println(date);
 
         String fl = requestDTO.getFromLocation();
         String tl = requestDTO.getToLocation();
@@ -84,7 +88,7 @@ public class TrainServiceIMPL implements TrainService {
 
             }
         }
-
-        return response;
+        ResponseEntity<List<SearchResponseDTO>> responseEntity = new ResponseEntity<>(response, HttpStatus.OK);
+        return responseEntity;
     }
 }

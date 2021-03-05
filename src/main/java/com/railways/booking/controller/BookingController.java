@@ -20,6 +20,6 @@ public class BookingController {
 
     @PostMapping("/book")
     public ResponseEntity<BookingResponseDTO> startBooking(@RequestBody BookingRequestDTO requestDTO){
-        return new ResponseEntity<>(bookingService.doBooking(requestDTO), HttpStatus.OK);
+        return bookingService.doBooking(requestDTO);
     }
 }

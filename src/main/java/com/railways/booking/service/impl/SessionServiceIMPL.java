@@ -5,6 +5,7 @@ import com.railways.booking.repository.SessionRepository;
 import com.railways.booking.service.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.Optional;
@@ -20,7 +21,9 @@ public class SessionServiceIMPL implements SessionService {
         Optional<Sessions> optional = sessionRepository.findById(userName);
         if(optional.isPresent()){
             try{
-                sessionRepository.updateSessionState(isLoggedIn,userName);
+                //sessionRepository.updateSessionState(isLoggedIn,userName);
+                //sessionRepository.deleteSession(userName);
+                //this case shouldn't happen
             }
             catch (Exception e){
                 //e.printStackTrace();
@@ -34,18 +37,14 @@ public class SessionServiceIMPL implements SessionService {
         }
     }
 
-//    @Override
-//    public void deleteSession(String uID) {
-//        Optional<Sessions> optional = sessionRepository.findById(uID);
-//        if(optional.isPresent()){
-//            try{
-//                sessionRepository.deleteSession(uID);
-//            }
-//            catch (Exception e){
-//
-//            }
-//            return;
-//        }
-//        return;
-//    }
+    @Override
+    @Transactional
+    public void deleteSession(String uID) {
+        try{
+            sessionRepository.deleteSession(uID);
+        }
+        catch (Exception e){
+
+        }
+    }
 }

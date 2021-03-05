@@ -19,5 +19,8 @@ public class SessionController {
         sessionService.updateSession(userName,isLoggedIn);
     }
 
-
+    @PostMapping("/deleteSession")
+    void deleteSession(@RequestParam String userName){
+        sessionService.deleteSession(userName);
+    }
 }

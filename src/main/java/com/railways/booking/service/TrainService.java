@@ -2,9 +2,10 @@ package com.railways.booking.service;
 
 import com.railways.booking.dto.SearchRequestDTO;
 import com.railways.booking.dto.SearchResponseDTO;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 public interface TrainService {
-    List<SearchResponseDTO> getTrains(SearchRequestDTO requestDTO);
+    ResponseEntity<List<SearchResponseDTO>> getTrains(SearchRequestDTO requestDTO);
 }

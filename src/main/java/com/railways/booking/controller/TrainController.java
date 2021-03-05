@@ -4,6 +4,7 @@ import com.railways.booking.dto.SearchRequestDTO;
 import com.railways.booking.dto.SearchResponseDTO;
 import com.railways.booking.service.TrainService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +19,8 @@ public class TrainController {
     private TrainService trainService;
 
     @PostMapping("/search")
-    public List<SearchResponseDTO> search(@RequestBody SearchRequestDTO requestDTO){
+    public ResponseEntity<List<SearchResponseDTO>> search(@RequestBody SearchRequestDTO requestDTO){
         return trainService.getTrains(requestDTO);
     }
+
 }

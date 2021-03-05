@@ -1,15 +1,20 @@
 package com.railways.booking.service.impl;
 
 import com.railways.booking.constant.TrainConstants;
+import com.railways.booking.controller.SessionController;
 import com.railways.booking.dto.BookingRequestDTO;
 import com.railways.booking.dto.BookingResponseDTO;
 import com.railways.booking.entity.SearchCompositeKey;
 import com.railways.booking.entity.SeatAvilability;
+import com.railways.booking.entity.Sessions;
 import com.railways.booking.entity.Train;
 import com.railways.booking.repository.SeatAvailabilityRepository;
+import com.railways.booking.repository.SessionRepository;
 import com.railways.booking.repository.TrainRepository;
 import com.railways.booking.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +26,9 @@ public class BookingServiceIMPL implements BookingService {
 
     @Autowired
     private SeatAvailabilityRepository seatAvailabilityRepository;
+
+    @Autowired
+    private SessionRepository sessionRepository;
 
     @Autowired
     private TrainRepository trainRepository;
@@ -46,39 +54,59 @@ public class BookingServiceIMPL implements BookingService {
         return "Seats Unable to book";
     }
 
+    private boolean validateUserID(String s){
+        if(s!=null || s!=""){
+            Optional<Sessions> optional = sessionRepository.findById(s);
+            if(optional.isPresent()){
+                if("true".equals(optional.get().getIsLoggedIn())){
+                    return true;
+                }
+                else return false;
+            }
+            else{
+                return false;
+            }
+        }
+        return false;
+    }
+
     @Override
     @Transactional
-    public BookingResponseDTO doBooking(BookingRequestDTO requestDTO) {
-        SearchCompositeKey searchCompositeKey = new SearchCompositeKey();//making composite key for searching seat availability
-        searchCompositeKey.setDate(requestDTO.getDateOfJourney());
-        searchCompositeKey.setId(requestDTO.getTrainId());
-        Optional<SeatAvilability> optional = seatAvailabilityRepository.findById(searchCompositeKey);
+    public ResponseEntity<BookingResponseDTO> doBooking(BookingRequestDTO requestDTO) {
+        if(validateUserID(requestDTO.getUserID())){
+            SearchCompositeKey searchCompositeKey = new SearchCompositeKey();//making composite key for searching seat availability
+            searchCompositeKey.setDate(requestDTO.getDateOfJourney());
+            searchCompositeKey.setId(requestDTO.getTrainId());
+            Optional<SeatAvilability> optional = seatAvailabilityRepository.findById(searchCompositeKey);
 
-        if(optional.isPresent()){
-            SeatAvilability seatAvilability = optional.get();
-            Long totalSeats = seatAvilability.getTotalSeats();
-            long reqSeatCount = (long)requestDTO.getSeatCount();
-            Long afterUpdate = totalSeats-reqSeatCount;
-            if(afterUpdate >=0){
-                seatAvilability.setTotalSeats(afterUpdate);
-                seatAvailabilityRepository.save(seatAvilability);
-                String seatNumbers = generateSeatNumbers(requestDTO.getTrainId(),totalSeats,reqSeatCount);
-                BookingResponseDTO response = new BookingResponseDTO();
-                response.setSeatCount((int)reqSeatCount);
-                response.setSeatList(Arrays.asList(seatNumbers.split(" ")));
-                response.setDateOfJourney(requestDTO.getDateOfJourney());
-                response.setTrainId(requestDTO.getTrainId());
-                Train train = trainRepository.findById(requestDTO.getTrainId()).get();
-                response.setTrainName(train.getName());
-                response.setDepartureTime(train.getDepartureTime());
-                response.setPassengers(requestDTO.getPassengers());
+            if(optional.isPresent()){
+                SeatAvilability seatAvilability = optional.get();
+                Long totalSeats = seatAvilability.getTotalSeats();
+                long reqSeatCount = (long)requestDTO.getSeatCount();
+                Long afterUpdate = totalSeats-reqSeatCount;
+                if(afterUpdate >=0){
+                    seatAvilability.setTotalSeats(afterUpdate);
+                    seatAvailabilityRepository.save(seatAvilability);
+                    String seatNumbers = generateSeatNumbers(requestDTO.getTrainId(),totalSeats,reqSeatCount);
+                    BookingResponseDTO response = new BookingResponseDTO();
+                    response.setSeatCount((int)reqSeatCount);
+                    response.setSeatList(Arrays.asList(seatNumbers.split(" ")));
+                    response.setDateOfJourney(requestDTO.getDateOfJourney());
+                    response.setTrainId(requestDTO.getTrainId());
+                    Train train = trainRepository.findById(requestDTO.getTrainId()).get();
+                    response.setTrainName(train.getName());
+                    response.setDepartureTime(train.getDepartureTime());
+                    response.setPassengers(requestDTO.getPassengers());
+                    //store the booking history in db
+                    ResponseEntity<BookingResponseDTO> responseEntity = new ResponseEntity<>(response, HttpStatus.OK);
+                    return responseEntity;
+                }
 
-                return response;
             }
-
         }
 
+        ResponseEntity<BookingResponseDTO> responseEntity = new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         // TODO: ResponseEntity in controller
-        return null;
+        return responseEntity;
     }
 }
