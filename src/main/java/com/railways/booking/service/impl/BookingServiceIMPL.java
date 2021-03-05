@@ -56,9 +56,10 @@ public class BookingServiceIMPL implements BookingService {
 
     private boolean validateUserID(String s){
         if(s!=null || s!=""){
-            Optional<Sessions> optional = sessionRepository.findById(s);
-            if(optional.isPresent()){
-                if("true".equals(optional.get().getIsLoggedIn())){
+            String optional = sessionRepository.findbysessionid(s);
+            //Optional<Sessions> optional = sessionRepository.findById(s);
+            if(optional!=null){
+                if("true".equals(optional)){
                     return true;
                 }
                 else return false;
@@ -97,6 +98,7 @@ public class BookingServiceIMPL implements BookingService {
                     response.setTrainName(train.getName());
                     response.setDepartureTime(train.getDepartureTime());
                     response.setPassengers(requestDTO.getPassengers());
+                    response.setFare(250.75);
                     //store the booking history in db
                     ResponseEntity<BookingResponseDTO> responseEntity = new ResponseEntity<>(response, HttpStatus.OK);
                     return responseEntity;

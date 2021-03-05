@@ -15,12 +15,12 @@ public class SessionController {
     private SessionService sessionService;
 
     @PostMapping("/setSession")
-    void addSession(@RequestParam String userName,@RequestParam String isLoggedIn){
-        sessionService.updateSession(userName,isLoggedIn);
+    void addSession(@RequestParam String userName,@RequestParam String sessionId,@RequestParam String isLoggedIn){
+        sessionService.updateSession(userName,sessionId,isLoggedIn);
     }
 
     @PostMapping("/deleteSession")
-    void deleteSession(@RequestParam String userName){
-        sessionService.deleteSession(userName);
+    void deleteSession(@RequestParam String sessionid){
+        sessionService.deleteSession(sessionid);
     }
 }

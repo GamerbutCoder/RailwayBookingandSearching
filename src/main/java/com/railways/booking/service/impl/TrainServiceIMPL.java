@@ -35,7 +35,7 @@ public class TrainServiceIMPL implements TrainService {
     @Transactional
     public ResponseEntity<List<SearchResponseDTO>> getTrains(SearchRequestDTO requestDTO) {
         if(requestDTO.getDate()==null || requestDTO.getToLocation()==null || requestDTO.getFromLocation()==null){
-            ResponseEntity<List<SearchResponseDTO>> responseEntity = new ResponseEntity<>(null, HttpStatus.BAD_GATEWAY);
+            ResponseEntity<List<SearchResponseDTO>> responseEntity = new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
             return responseEntity;
         }
         java.sql.Date date = requestDTO.getDate();

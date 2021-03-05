@@ -16,25 +16,12 @@ public class SessionServiceIMPL implements SessionService {
     private SessionRepository sessionRepository;
 
     @Override
-    public void updateSession(String userName, String isLoggedIn) {
-        Sessions sessions = new Sessions();
-        Optional<Sessions> optional = sessionRepository.findById(userName);
-        if(optional.isPresent()){
-            try{
-                //sessionRepository.updateSessionState(isLoggedIn,userName);
-                //sessionRepository.deleteSession(userName);
-                //this case shouldn't happen
-            }
-            catch (Exception e){
-                //e.printStackTrace();
-            }
-
-        }
-        else{
+    public void updateSession(String userName, String sessionId,String isLoggedIn) {
+            Sessions sessions = new Sessions();
+            sessions.setSessionID(sessionId);
             sessions.setIsLoggedIn(isLoggedIn);
             sessions.setUserName(userName);
             sessionRepository.save(sessions);
-        }
     }
 
     @Override
