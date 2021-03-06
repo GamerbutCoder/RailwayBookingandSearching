@@ -1,7 +1,9 @@
 package com.railways.booking.controller;
 
+import com.railways.booking.dto.AddingTrainsDTO;
 import com.railways.booking.dto.SearchRequestDTO;
 import com.railways.booking.dto.SearchResponseDTO;
+import com.railways.booking.entity.Train;
 import com.railways.booking.service.TrainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,11 @@ public class TrainController {
     @PostMapping("/search")
     public ResponseEntity<List<SearchResponseDTO>> search(@RequestBody SearchRequestDTO requestDTO){
         return trainService.getTrains(requestDTO);
+    }
+
+    @PostMapping("/admin/addTrain")
+    public void addTrain(@RequestBody AddingTrainsDTO newTrain){
+        trainService.addTrain(newTrain);
     }
 
 }

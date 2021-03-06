@@ -2,6 +2,7 @@ package com.railways.booking.service.impl;
 
 import com.railways.booking.client.ClientService;
 import com.railways.booking.constant.TrainConstants;
+import com.railways.booking.dto.AddingTrainsDTO;
 import com.railways.booking.dto.SearchRequestDTO;
 import com.railways.booking.dto.SearchResponseDTO;
 import com.railways.booking.entity.SearchCompositeKey;
@@ -10,6 +11,7 @@ import com.railways.booking.entity.Train;
 import com.railways.booking.repository.SeatAvailabilityRepository;
 import com.railways.booking.repository.TrainRepository;
 import com.railways.booking.service.TrainService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -90,5 +92,20 @@ public class TrainServiceIMPL implements TrainService {
         }
         ResponseEntity<List<SearchResponseDTO>> responseEntity = new ResponseEntity<>(response, HttpStatus.OK);
         return responseEntity;
+    }
+
+    @Override
+    public void addTrain(AddingTrainsDTO req) {
+        Train newTrain = new Train();
+        BeanUtils.copyProperties(newTrain,req);
+
+        //newTrain.setId(id);
+//        newTrain.setBogie(req.getBogie());
+//        newTrain.setDepartureTime(req.getDepartureTime());
+//        newTrain.setName(req.getName());
+//        newTrain.setEndLocation(req.getEndLocation());
+//        newTrain.setStartLocation(req.getStartLocation());
+
+        trainRepository.save(newTrain);
     }
 }
