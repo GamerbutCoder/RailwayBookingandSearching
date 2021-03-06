@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class AddingTrainsDTO {
+    private Long trainId;
     private String name;
     private String startLocation;
     private String endLocation;

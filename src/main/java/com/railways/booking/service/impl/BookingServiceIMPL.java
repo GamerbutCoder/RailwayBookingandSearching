@@ -44,9 +44,9 @@ public class BookingServiceIMPL implements BookingService {
     private BookingHistoryRepository bookingHistoryRepository;
 
     private String generateSeatNumbers(Long id,Long totalSeats,Long reqSeats){
-        Optional<Train> optionalTrain = trainRepository.findById(id);
-        if(optionalTrain.isPresent()){
-            int totalSeatsInTrain = optionalTrain.get().getBogie()* TrainConstants.SEATS_PER_COMPARTMENT* TrainConstants.COMPARTMENTS_PER_BOGIE;
+        Train optionalTrain = trainRepository.getTrainByTrainId(id);
+        if(optionalTrain!=null){
+            int totalSeatsInTrain = optionalTrain.getBogie()* TrainConstants.SEATS_PER_COMPARTMENT* TrainConstants.COMPARTMENTS_PER_BOGIE;
             int seatsInBogie = TrainConstants.COMPARTMENTS_PER_BOGIE*TrainConstants.SEATS_PER_COMPARTMENT;
             int bookedSeats = (int)(totalSeatsInTrain - totalSeats);
             StringBuilder sb = new StringBuilder("");
@@ -66,7 +66,7 @@ public class BookingServiceIMPL implements BookingService {
 
     private boolean validateUserID(String s){
         if(s!=null || s!=""){
-            String optional = sessionRepository.findbysessionid(s);
+            String optional =sessionRepository.findbysessionid(s).toString();
             //Optional<Sessions> optional = sessionRepository.findById(s);
             if(optional!=null){
                 if("true".equals(optional)){
@@ -104,7 +104,7 @@ public class BookingServiceIMPL implements BookingService {
                     response.setSeatList(Arrays.asList(seatNumbers.split(" ")));
                     response.setDateOfJourney(requestDTO.getDateOfJourney());
                     response.setTrainId(requestDTO.getTrainId());
-                    Train train = trainRepository.findById(requestDTO.getTrainId()).get();
+                    Train train = trainRepository.getTrainByTrainId(requestDTO.getTrainId());
                     response.setTrainName(train.getName());
                     response.setDepartureTime(train.getDepartureTime());
                     response.setPassengers(requestDTO.getPassengers());
@@ -134,6 +134,7 @@ public class BookingServiceIMPL implements BookingService {
         bookingHistory.setTrainName(bookingResponseDTO.getTrainName());
         bookingHistory.setDepartureTime(bookingResponseDTO.getDepartureTime());
         bookingHistory.setSeatList(seatList);
+        bookingHistory.setSeatCount(bookingResponseDTO.getSeatCount());
 
         String userName = sessionRepository.findUserNameBySessionId(sessionId);
 

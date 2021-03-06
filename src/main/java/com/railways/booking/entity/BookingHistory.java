@@ -19,7 +19,7 @@ public class BookingHistory {
     private Long trainId;
     private String trainName;
     private java.sql.Date dateOfJourney;
-    private int seatCount;
+    private Integer seatCount;
     private String seatList;
     private String departureTime;
 }

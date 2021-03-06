@@ -52,14 +52,14 @@ public class TrainServiceIMPL implements TrainService {
         System.out.println(ll);
         List<SearchResponseDTO> response = new ArrayList<>();
         for(Long l : ll){
-            Optional<Train> optional = trainRepository.findById(l); //finding train details
-            if(optional.isPresent()){ // if train exists
+            Train optional = trainRepository.getTrainByTrainId(l); //finding train details
+            if(optional!=null){ // if train exists
 
 
                 SearchResponseDTO res = new SearchResponseDTO();
-                res.setName(optional.get().getName());
-                res.setDepartureTime(optional.get().getDepartureTime()); // need to be updated using distance and speed
-                res.setTrainId(optional.get().getId());
+                res.setName(optional.getName());
+                res.setDepartureTime(optional.getDepartureTime()); // need to be updated using distance and speed
+                res.setTrainId(optional.getTrainId());
                 res.setStartLocation(requestDTO.getFromLocation());
                 res.setEndLocation(requestDTO.getToLocation());
                 res.setDate(date);
@@ -67,14 +67,14 @@ public class TrainServiceIMPL implements TrainService {
 
                 SearchCompositeKey searchCompositeKey = new SearchCompositeKey();//making composite key for searching seat availability
                 searchCompositeKey.setDate(date);
-                searchCompositeKey.setId(optional.get().getId());
+                searchCompositeKey.setId(optional.getTrainId());
 
                 Optional<SeatAvilability> optional1 = seatAvailabilityRepository.findById(searchCompositeKey); //checking if seat availability table has row
 
                 if(!optional1.isPresent()){ // if doesn't exist we calculate and insert total seats
                     SeatAvilability seatAvilability = new SeatAvilability();
                     seatAvilability.setIdDate(searchCompositeKey);
-                    Long totalSeats = (long)optional.get().getBogie()* TrainConstants.COMPARTMENTS_PER_BOGIE*TrainConstants.SEATS_PER_COMPARTMENT;
+                    Long totalSeats = (long)optional.getBogie()* TrainConstants.COMPARTMENTS_PER_BOGIE*TrainConstants.SEATS_PER_COMPARTMENT;
                     res.setTotalSeats(totalSeats);
                     seatAvilability.setTotalSeats(totalSeats);
                     seatAvailabilityRepository.save(seatAvilability);
@@ -97,14 +97,15 @@ public class TrainServiceIMPL implements TrainService {
     @Override
     public void addTrain(AddingTrainsDTO req) {
         Train newTrain = new Train();
-        BeanUtils.copyProperties(newTrain,req);
+       // BeanUtils.copyProperties(newTrain,req);
 
         //newTrain.setId(id);
-//        newTrain.setBogie(req.getBogie());
-//        newTrain.setDepartureTime(req.getDepartureTime());
-//        newTrain.setName(req.getName());
-//        newTrain.setEndLocation(req.getEndLocation());
-//        newTrain.setStartLocation(req.getStartLocation());
+        newTrain.setBogie(req.getBogie());
+        newTrain.setDepartureTime(req.getDepartureTime());
+        newTrain.setName(req.getName());
+        newTrain.setEndLocation(req.getEndLocation());
+        newTrain.setStartLocation(req.getStartLocation());
+        newTrain.setTrainId(req.getTrainId());
 
         trainRepository.save(newTrain);
     }

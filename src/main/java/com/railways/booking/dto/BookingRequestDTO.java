@@ -8,7 +8,7 @@ import java.util.List;
 public class BookingRequestDTO {
     private Long trainId;
     private java.sql.Date dateOfJourney;
-    private int seatCount;
+    private Integer seatCount;
     private List<PassengerDTO> passengers;
     private String userID;
 }
