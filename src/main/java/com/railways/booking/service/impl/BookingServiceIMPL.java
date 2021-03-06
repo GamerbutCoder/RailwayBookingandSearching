@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class BookingServiceIMPL implements BookingService {
@@ -108,7 +109,9 @@ public class BookingServiceIMPL implements BookingService {
                     response.setTrainName(train.getName());
                     response.setDepartureTime(train.getDepartureTime());
                     response.setPassengers(requestDTO.getPassengers());
-                    response.setFare(250.75);
+                    int randomNum = ThreadLocalRandom.current().nextInt(1, 6);
+                    double fare = 250.75 * randomNum;
+                    response.setFare(fare);
                     //store the booking history in db
                     String sessionId = requestDTO.getUserID();
                     createBookingHistory(response,seatNumbers,sessionId);
