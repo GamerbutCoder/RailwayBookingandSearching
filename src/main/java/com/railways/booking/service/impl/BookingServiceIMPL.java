@@ -16,6 +16,9 @@ import com.railways.booking.repository.SeatAvailabilityRepository;
 import com.railways.booking.repository.SessionRepository;
 import com.railways.booking.repository.TrainRepository;
 import com.railways.booking.service.BookingService;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,14 +26,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.time.Duration;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class BookingServiceIMPL implements BookingService {
+
+
+
 
     @Autowired
     private SeatAvailabilityRepository seatAvailabilityRepository;
